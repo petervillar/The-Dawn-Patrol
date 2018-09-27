@@ -12,7 +12,7 @@
 ;                                                              Tim Gilberts
 ;
 ;                                      'And also WE ALL have to work for it'
-;                                                            Andr‚s Samudio
+;                                                            AndrÃ©s Samudio
 ;
 ;                                                                   [8-6-89]
 ;
