@@ -12,7 +12,7 @@
 ;                                                              Tim Gilberts
 ;
 ;                                      'And also WE ALL have to work for it'
-;                                                            AndrÃ©s Samudio
+;                                                            Andr‚s Samudio
 ;
 ;                                                                   [8-6-89]
 ;
@@ -179,8 +179,13 @@ LOT     20      noun
 EVERY   20      noun
 ;
 DOOR    50      noun   
-;
-TORCH   100     noun
+TORCH   51      noun
+HELME	52	noun
+COAT	53	noun
+SWORD	54	noun
+SADDL	55	noun
+BRIDL	56	noun
+HORSE	57	noun
 ;                       Verbs
 GET     20      verb
 TAKE    20      verb
@@ -426,7 +431,21 @@ The sentries bar your progress. "Common soldiers are not allowed in the throne r
 ;------------------------------------------------------------------------------
 /OTX    ;Object Texts
 /0
-A pocket torch. (lit)
+a lit torch
+/1
+an unlit torch
+/2
+a helmet
+/3
+a coat of chainmail
+/4
+a sword
+/5
+a saddle
+/6
+a bridle
+/7
+a horse
 ;------------------------------------------------------------------------------
 /LTX    ;Location Texts
 /0
@@ -485,7 +504,14 @@ S 6
 /OBJ    ;Object Definitions
 ;obj  starts  weight    c w  5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0    noun   adjective
 ;num    at
-/0      CARRIED 1       _ _  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _    TORCH  _
+/0      252	1       _ _  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _    TORCH  _
+/1	5	1	_ _  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _	TORCH  _
+/2	252	1	_ _  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _	HELME  _
+/3	252	1	_ Y  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _	COAT   _
+/4	2	1	_ _  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _	SWORD   _
+/5	4	1	_ _  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _	SADDL   _
+/6	4	1	_ _  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _	BRIDL   _
+/7	3	20	_ _  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _	HORSE   _
 ;------------------------------------------------------------------------------
 /PRO 0       ;Main Location Loop
 
