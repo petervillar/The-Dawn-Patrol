@@ -186,6 +186,10 @@ SWORD	54	noun
 SADDL	55	noun
 BRIDL	56	noun
 HORSE	57	noun
+BENCH	58	noun
+STRAW	59	noun
+FIRE	60	noun
+NOTIC	61	noun
 ;                       Verbs
 GET     20      verb
 TAKE    20      verb
@@ -214,6 +218,13 @@ LOOK    33      verb
 OPEN    34      verb
 CLOSE   35      verb
 SHUT    35      verb
+SEARC	36	verb
+LIGHT	37	verb
+EXTIN	38	verb
+POKE	39	verb
+INSER	39	verb
+HOLD	39	verb
+READ	40	verb
 ;                               Adjectives
 SMALL   2       adjective
 BIG     3       adjective
@@ -257,7 +268,7 @@ THEN    2       conjugation
 /0
 It's too dark to see anything.
 /1
-I can also see: 
+I can also see 
 /2
 
 What now?
@@ -280,11 +291,9 @@ I can't go in that direction.
 I can't do that.
 
 /9
-I have with me:
-
+I have with me 
 /10
-I am wearing:
-
+I am wearing 
 /11 ;*Spare
 /12
 Are you sure? 
@@ -292,7 +301,7 @@ Are you sure?
 Would you like another go? 
 /14 ;*Spare
 /15
-OK.
+Ok.
 
 /16
 Press any key to continue.
@@ -371,7 +380,7 @@ The _ isn't in the
 /47
  and 
 /48
-.
+. 
 
 /49
 I don't have the _.
@@ -385,7 +394,7 @@ I'm not wearing the _.
 /52
 There isn't one of those in the 
 /53
-Nothing.
+nothing at all.
 
 /54 ;Letter for Tape
 T
@@ -428,6 +437,24 @@ You can't.
 You can't leave the castle on foot.
 /7
 The sentries bar your progress. "Common soldiers are not allowed in the throne room" one of them barks at you. 
+/8
+What's this you've found under the bench? It's your helmet, which you pick up.
+/9
+You search the straw revealing an object...
+/10
+You poke the end of the torch into the fire and it bursts into flame.
+/11
+You find nothing of any use.
+/12
+You see nothing special.
+/13
+The torch is 
+/14
+unlit.
+/15
+lit.
+/16
+The notice on the wall reads: NO SPITTING IN THE FIRE!
 ;------------------------------------------------------------------------------
 /OTX    ;Object Texts
 /0
@@ -506,7 +533,7 @@ S 6
 ;num    at
 /0      252	1       _ _  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _    TORCH  _
 /1	5	1	_ _  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _	TORCH  _
-/2	252	1	_ _  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _	HELME  _
+/2	252	1	_ Y  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _	HELME  _
 /3	252	1	_ Y  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _	COAT   _
 /4	2	1	_ _  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _	SWORD   _
 /5	4	1	_ _  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _	SADDL   _
@@ -597,11 +624,14 @@ _       _       SYSMESS 6               ; I didn't understand
 ; process tables 1 and 2 can now be anywhere or completely absent. Everything
 ; is implemented in the DAAD language itself.
 
+_	_	ABILITY	10	10
+
+_	_	LET	53	64   ; object lists printed as sentences.
+
 _       _       AT      0
                 ANYKEY
                 GOTO    1
                 RESTART
-
 
 _	_	AT	1
 		ZERO	11
@@ -622,8 +652,10 @@ _	_	AT	2
 		MES	2
 
 ;This is better carried out thus
+
 _       _       NEWLINE
                 ZERO    DarkF            ; Isn't dark
+		NEWLINE
                 LISTOBJ
 
 ;than the old system needed in Version 1, without accesss to DarkF
@@ -638,7 +670,7 @@ _       _       NEWLINE
 ;------------------------------------------------------------------------------
 /PRO 4 ; Old process 2
 ;------------------------------------------------------------------------------
-/PRO 5 ; Command decoder
+/PRO 5 ; Old response table - Command decoder
 
 S       _       AT      1
                 ZERO    11
@@ -667,10 +699,12 @@ N	_	AT	2
 		DONE
 
 W	_	AT	6
+                NEWLINE
 		MESSAGE	6
 		DONE
 
 N	_	AT	5
+                NEWLINE
 		MESSAGE	7
 		DONE
 
@@ -686,10 +720,55 @@ SHUT    DOOR    ATGT    0
                 MESSAGE 4
                 CLEAR   11
 
+LOOK	BENCH	PREP	UNDER
+		AT	7
+		ZERO	12
+		MESSAGE	8
+		PLACE	2	254
+		SET	12
+		DONE
+
+LOOK	_	MESSAGE	12
+		DONE
+
+SEARCH	STRAW	AT	3
+		ZERO	13
+		MESSAGE	9
+		CREATE	3
+		SET	13
+		RESTART
+
+SEARCH	_	MESSAGE	11
+		DONE
+
+EXAMI	_	MESSAGE	12
+		DONE
+
+EXTIN	TORCH	PROCESS	8
+		DONE
+
+LIGHT	TORCH	AT	7
+		PROCESS	7
+		DONE
+
+POKE	TORCH	PREP	IN
+		NOUN2	FIRE
+		AT	7
+		PROCESS	7
+		DONE
+
+EXAMI	NOTICE	LET	33	40
+
+READ	NOTICE	AT	7
+		MESSAGE	16
+		DONE
+
 I       _       SYSMESS 9
-                LISTAT  CARRIED
+                LISTAT  CARRIED         ; 254
+                NEWLINE
                 SYSMESS 10
-                LISTAT  WORN
+                LISTAT  WORN            ; 253
+                NEWLINE
                 DONE
 
 GET     ALL     DOALL   HERE
@@ -698,7 +777,6 @@ GET     _       AUTOG
 
 DROP    ALL     DOALL   CARRIED
 DROP    _       AUTOD
-                DONE
 
 REMOVE  ALL     DOALL   WORN
 REMOVE  _       AUTOR
@@ -754,4 +832,40 @@ _       _       RESET                   ; Set objects to start location & Flag 1
                 SET     CPAdject
                 GOTO    1               ; Main game
 
-
+/PRO 7 ; Light torch at 7
+
+_	_	CARRIED	0
+		MES	13		; the torch is
+		MESSAGE	15		; lit
+		DONE
+
+_	_	CARRIED	1
+		MESSAGE	10		; "you poke..."
+		SWAP	1	0
+		DONE
+
+_	_	SYSMESS	8		; "I can't do that."
+		DONE
+
+/PRO 8 ; Extinguish torch
+
+_	_	CARRIED	0		; a lit torch
+		MES	13		; the torch is
+		MESSAGE	14		; unlit
+		SWAP	0	1	; player gets the unlit torch - missing in the tutorial
+		DONE
+
+_	_	CARRIED	0
+		ZERO	0		; dark?
+		SWAP	0	1
+		OK
+
+_	_	CARRIED	0		; does this entry ever run?
+		NOTZERO	0
+		SYSMESS	15		; ok
+		PAUSE	75
+		SWAP	0	1
+		RESTART
+
+_	_	SYSMESS	8		; "I can't do that."
+		DONE
