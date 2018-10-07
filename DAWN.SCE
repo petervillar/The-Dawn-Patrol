@@ -1,25 +1,17 @@
-; BLANK.SCE empty database for DAAD V2
+; DAWN.SCE database for DAAD V2
 ;
 ; This database provides a way of adapting PAW & DAAD V1 sources to DAAD V2. 
 ; Note that flags which were automatically decremented no longer do so.
 ;
 ; English language template, recreated by Stefan Vogt, Pond Soft [17-7-18].
 ;
+; DAWN PATROL - By Larry Horsfield
+; https://www.sinclairuser.com/128/pawtut.htm
 ;
 ;------------------------------------------------------------------------------
-;
-; 'Everything is possible in this life ( but it all costs time and money! )'
-;                                                              Tim Gilberts
-;
-;                                      'And also WE ALL have to work for it'
-;                                                            Andres Samudio
-;
-;                                                                   [8-6-89]
-;
-;------------------------------------------------------------------------------
-;
 ;
 #include symbols.sce
+;
 /CTL    ;Control Section (null char is an underline)
 _       
 /TOK    ;Tokens as supplied with PAW under CP/M
@@ -301,6 +293,7 @@ Would you like another go?
 /15
 Ok.
 
+
 /16
 Press any key to continue.
 
@@ -313,23 +306,30 @@ Press any key to continue.
 /23
 I'm not wearing one of those.
 
+
 /24
 I can't.  I'm wearing the _.
+
 
 /25
 I already have the _.
 
+
 /26
 There isn't one of those here.
+
 
 /27
 I can't carry any more things.
 
+
 /28
 I don't have one of those.
 
+
 /29
 I'm already wearing the _.
+
 
 /30     ;One upper case character only
 Y
@@ -349,26 +349,34 @@ Time passes...
 /36
 I now have the _.
 
+
 /37
 I'm now wearing the _.
+
 
 /38
 I've removed the _.
 
+
 /39
 I've dropped the _.
+
 
 /40
 I can't wear the _.
 
+
 /41
 I can't remove the _.
+
 
 /42
 I can't remove the _.  My hands are full.
 
+
 /43
 The _ weighs too much for me.
+
 
 /44
 The _ is in the 
@@ -381,14 +389,18 @@ The _ isn't in the
 /48
 . 
 
+
 /49
 I don't have the _.
+
 
 /50
 I'm not wearing the _.
 
+
 /51
 .
+
 
 /52
 There isn't one of those in the 
@@ -428,24 +440,34 @@ closed.
 open. 
 /3
 The door swings open... 
+
 /4
 You close the door which shuts with a bang... 
+
 /5
 You can't. 
+
 /6
 You can't leave the castle on foot.
+
 /7
 The sentries bar your progress. "Common soldiers are not allowed in the throne room" one of them barks at you. 
+
 /8
 What's this you've found under the bench? It's your helmet, which you pick up.
+
 /9
 You search the straw revealing an object...
+
 /10
 You poke the end of the torch into the fire and it bursts into flame.
+
 /11
 You find nothing of any use.
+
 /12
 You see nothing special.
+
 /13
 The torch is 
 /14
@@ -454,16 +476,21 @@ unlit.
 lit.
 /16
 The notice on the wall reads: NO SPITTING IN THE FIRE!
+
 /17
 The horse has no 
 /18
 saddle.
+
 /19
 bridle.
+
 /20
 You don't have a sword.
+
 /21
 You are not wearing the _.
+
 /22
 
 
@@ -476,6 +503,7 @@ WELL DONE! You have finished the adventure!
 /23
 
 You hear a loud voice yell out nearby, "Private Smith! where are you hiding you 'orrible little man?"
+
 /24
 
 You hear footsteps behind you and a gruff voice shouts out, "Here he is! Throw him in the dungeon for failing to report for duty!" Two burly soldiers frogmarch you away and throw you in the castle dungeon! You took too many moves and have failed!
@@ -501,8 +529,6 @@ a horse
 ;------------------------------------------------------------------------------
 /LTX    ;Location Texts
 /0
-
-
               Dawn Patrol
 
 
@@ -512,9 +538,15 @@ must find these before you ride out to join your comrades - before your
 commander notices your absence!
 
 
-Release 006 Serial number 20181007
-Interpreter DAAD v2 
-Copyright (c) 1988, 1989, 1990, 1991 Infinite Imaginations & Aventuras AD.
+Ported to DAAD by Peter Villar from Larry Horsfield's five-part series "PLAYING AND WRITING ADVENTURE GAMES" (www.sinclairuser.com/128/pawtut.htm)
+
+
+Release 01 Serial number 20181007 / DAAD v2
+
+Copyright (c) 1988, 1989, 1990, 1991
+
+Infinite Imaginations & Aventuras AD.
+
 
 
 /1
@@ -730,12 +762,10 @@ N	_	AT	2
 		DONE
 
 W	_	AT	6
-                NEWLINE
 		MESSAGE	6
 		DONE
 
 N	_	AT	5
-                NEWLINE
 		MESSAGE	7
 		DONE
 
@@ -767,7 +797,7 @@ SEARCH	STRAW	AT	3
 		MESSAGE	9
 		CREATE	3
 		SET	13
-		RESTART
+		DONE
 
 SEARCH	_	MESSAGE	11
 		DONE
@@ -823,7 +853,6 @@ RIDE	HORSE	AT	3
 
 I       _       SYSMESS 9
                 LISTAT  CARRIED         ; 254
-                NEWLINE
                 SYSMESS 10
                 LISTAT  WORN            ; 253
                 NEWLINE
@@ -876,8 +905,22 @@ _       _       WINAT   0       0       ; set 14 0 for split screen with GFX
                 DESC    0               ; Introduction
                 ANYKEY
                 CLS
+		CLEAR	5
+		CLEAR	11
+		CLEAR	12
+		CLEAR	13
+		CLEAR	14
+		CLEAR	15
+		CLEAR	16
                 CLEAR   255             ; Clear all flags
-		CLEAR	5		; Used in DAWN patrol
+
+;		CLEAR	5		; DAWN patrol - turns
+;		CLEAR	11		; DAWN patrol - door
+;		CLEAR	12		; DAWN patrol - look under bench
+;		CLEAR	13		; DAWN patrol - search straw
+;		CLEAR	14		; DAWN patrol - put saddle
+;		CLEAR	15		; DAWN patrol - put bridle
+;		CLEAR	16		; DAWN patrol - game finished
 
 _       _       NOTEQ   255     GFlags
                 CLEAR   [255]
@@ -934,13 +977,13 @@ _	_	SYSMESS	8		; "I can't do that."
 /PRO 9 ; (RIDE HORSE at 3)
 
 _	_	NOTWORN	2		; helmet
-;		WHATO
+;		WHATO			; this would put "horse" in 51, what for?
 		LET	51	2
 		MESSAGE	21		; "You are not wearing the _."
 		DONE
 
 _	_	NOTWORN	3		; coat
-;		WHATO
+;		WHATO			; this would put "horse" in 51, what for?
 		LET	51	3
 		MESSAGE	21		; "You are not wearing the _."
 		DONE
@@ -968,10 +1011,10 @@ _	_	MESSAGE	22		; "You mount the horse and..."
 
 _	_	ZERO	16
 		ZERO	5
-		LET	5	31	; Complete the adventure within 30 moves
+		LET	5	51	; Complete the adventure within 50 moves
 
 _	_	ZERO	16
-		EQ	5	11	; First (and last) warning
+		EQ	5	21	; First (and last) warning
 		MESSAGE	23		; "You hear a loud voice..."
 
 _	_	ZERO	16
