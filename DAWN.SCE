@@ -12,7 +12,7 @@
 ;                                                              Tim Gilberts
 ;
 ;                                      'And also WE ALL have to work for it'
-;                                                            Andr‚s Samudio
+;                                                            Andres Samudio
 ;
 ;                                                                   [8-6-89]
 ;
@@ -225,6 +225,8 @@ POKE	39	verb
 INSER	39	verb
 HOLD	39	verb
 READ	40	verb
+RIDE	41	verb
+MOUNT	41	verb
 ;                               Adjectives
 SMALL   2       adjective
 BIG     3       adjective
@@ -270,16 +272,12 @@ It's too dark to see anything.
 /1
 I can also see 
 /2
-
 What now?
 /3
-
 What next?
 /4
-
 What should I do now?
 /5
-
 What should I do next?
 /6
 I was not able to understand any of that.  Please try again.
@@ -343,6 +341,7 @@ More...
 
 >\s
 /34
+
 /35
 
 Time passes...
@@ -455,6 +454,32 @@ unlit.
 lit.
 /16
 The notice on the wall reads: NO SPITTING IN THE FIRE!
+/17
+The horse has no 
+/18
+saddle.
+/19
+bridle.
+/20
+You don't have a sword.
+/21
+You are not wearing the _.
+/22
+
+
+You mount the horse and ride out of the castle to join your comrades on the dawn patrol ...
+
+
+WELL DONE! You have finished the adventure!
+
+
+/23
+
+You hear a loud voice yell out nearby, "Private Smith! where are you hiding you 'orrible little man?"
+/24
+
+You hear footsteps behind you and a gruff voice shouts out, "Here he is! Throw him in the dungeon for failing to report for duty!" Two burly soldiers frogmarch you away and throw you in the castle dungeon! You took too many moves and have failed!
+
 ;------------------------------------------------------------------------------
 /OTX    ;Object Texts
 /0
@@ -487,7 +512,7 @@ must find these before you ride out to join your comrades - before your
 commander notices your absence!
 
 
-Release 01 Serial number 090918
+Release 006 Serial number 20181007
 Interpreter DAAD v2 
 Copyright (c) 1988, 1989, 1990, 1991 Infinite Imaginations & Aventuras AD.
 
@@ -584,6 +609,8 @@ _       _       PROCESS 4               ; Do process 2 stuff here
 ;                ABSENT  0
 ;                MINUS   10      1
 
+_	_	MINUS	5	1	; Used in Process 10
+
 _       _       PARSE   0               ; Get next LS from current buffer
                 PROCESS 2               ; Failed cos of invalid or timeout
                 REDO
@@ -651,14 +678,15 @@ _	_	AT	2
 		NOTZERO	11
 		MES	2
 
-;This is better carried out thus
+; This is better carried out thus ...
 
 _       _       NEWLINE
                 ZERO    DarkF            ; Isn't dark
 		NEWLINE
                 LISTOBJ
 
-;than the old system needed in Version 1, without accesss to DarkF
+; ... than the old system needed in Version 1, without accesss to DarkF
+
 ;_       _       NEWLINE
 ;                ZERO    0               ;If it is light...
 ;                ABSENT  0               ;and the light source is absent...
@@ -669,6 +697,9 @@ _       _       NEWLINE
 
 ;------------------------------------------------------------------------------
 /PRO 4 ; Old process 2
+
+_	_	PROCESS	10		; commander looking for you
+
 ;------------------------------------------------------------------------------
 /PRO 5 ; Old response table - Command decoder
 
@@ -763,6 +794,33 @@ READ	NOTICE	AT	7
 		MESSAGE	16
 		DONE
 
+PUT	SADDLE	PREP	ON
+		NOUN2	HORSE
+		CARRIED	5		; a saddle
+		PRESENT	7		; is the horse there?
+		DESTROY 5
+		SET	14
+		OK 
+
+_	SADDLE	NOUN2	HORSE		; so that "saddle horse" works
+		CARRIED	5
+		PRESENT	7
+		DESTROY	5
+		SET	14
+		OK
+
+PUT	BRIDL	PREP	ON
+		NOUN2	HORSE
+		CARRIED	6		; a bridle
+		PRESENT	7		; is the horse there?
+		DESTROY	6
+		SET	15
+		OK
+
+RIDE	HORSE	AT	3
+		PROCESS	9
+		DONE
+
 I       _       SYSMESS 9
                 LISTAT  CARRIED         ; 254
                 NEWLINE
@@ -806,7 +864,9 @@ RAMLO   _       RAMLOAD 255             ;Reload all flags
                 RESTART
 
 LOOK    _       RESTART
+
 ;------------------------------------------------------------------------------
+
 /PRO 6 ; Initialise the DAAD system
 
 _       _       WINDOW  1               ; Windows are random
@@ -817,6 +877,7 @@ _       _       WINAT   0       0       ; set 14 0 for split screen with GFX
                 ANYKEY
                 CLS
                 CLEAR   255             ; Clear all flags
+		CLEAR	5		; Used in DAWN patrol
 
 _       _       NOTEQ   255     GFlags
                 CLEAR   [255]
@@ -869,3 +930,52 @@ _	_	CARRIED	0		; does this entry ever run?
 
 _	_	SYSMESS	8		; "I can't do that."
 		DONE
+
+/PRO 9 ; (RIDE HORSE at 3)
+
+_	_	NOTWORN	2		; helmet
+;		WHATO
+		LET	51	2
+		MESSAGE	21		; "You are not wearing the _."
+		DONE
+
+_	_	NOTWORN	3		; coat
+;		WHATO
+		LET	51	3
+		MESSAGE	21		; "You are not wearing the _."
+		DONE
+
+_	_	NOTCARR	4		; sword
+		MESSAGE	20		; "You don't have a sword."
+		DONE
+
+_	_	ZERO	14
+		MES	17		; "The horse has no"
+		MESSAGE	18		; saddle
+		DONE
+
+_	_	ZERO	15
+		MES	17		; "The horse has no"
+		MESSAGE	19		; bridle
+		DONE
+
+_	_	MESSAGE	22		; "You mount the horse and..."
+		SET	16
+;		TURNS
+		END
+
+/PRO 10 ; (<- /PRO 2 commander looking for you)
+
+_	_	ZERO	16
+		ZERO	5
+		LET	5	31	; Complete the adventure within 30 moves
+
+_	_	ZERO	16
+		EQ	5	11	; First (and last) warning
+		MESSAGE	23		; "You hear a loud voice..."
+
+_	_	ZERO	16
+		EQ	5	1
+		MESSAGE	24
+;		TURNS
+		END
