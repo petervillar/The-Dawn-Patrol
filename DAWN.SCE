@@ -1,25 +1,17 @@
-; BLANK.SCE empty database for DAAD V2
+; DAWN.SCE database for DAAD V2
 ;
 ; This database provides a way of adapting PAW & DAAD V1 sources to DAAD V2. 
 ; Note that flags which were automatically decremented no longer do so.
 ;
 ; English language template, recreated by Stefan Vogt, Pond Soft [17-7-18].
 ;
+; DAWN PATROL - By Larry Horsfield
+; https://www.sinclairuser.com/128/pawtut.htm
 ;
 ;------------------------------------------------------------------------------
-;
-; 'Everything is possible in this life ( but it all costs time and money! )'
-;                                                              Tim Gilberts
-;
-;                                      'And also WE ALL have to work for it'
-;                                                            Andr‚s Samudio
-;
-;                                                                   [8-6-89]
-;
-;------------------------------------------------------------------------------
-;
 ;
 #include symbols.sce
+;
 /CTL    ;Control Section (null char is an underline)
 _       
 /TOK    ;Tokens as supplied with PAW under CP/M
@@ -225,6 +217,9 @@ POKE	39	verb
 INSER	39	verb
 HOLD	39	verb
 READ	40	verb
+RIDE	41	verb
+MOUNT	41	verb
+ABOUT	42	verb
 ;                               Adjectives
 SMALL   2       adjective
 BIG     3       adjective
@@ -267,22 +262,19 @@ THEN    2       conjugation
 /STX    ;System Message Texts
 /0
 It's too dark to see anything.
+
 /1
 I can also see 
 /2
-
 What now?
 /3
-
 What next?
 /4
-
 What should I do now?
 /5
-
 What should I do next?
 /6
-I was not able to understand any of that.  Please try again.
+I was not able to understand any of that.
 
 /7
 I can't go in that direction.
@@ -303,6 +295,7 @@ Would you like another go?
 /15
 Ok.
 
+
 /16
 Press any key to continue.
 
@@ -315,23 +308,30 @@ Press any key to continue.
 /23
 I'm not wearing one of those.
 
+
 /24
 I can't.  I'm wearing the _.
+
 
 /25
 I already have the _.
 
+
 /26
 There isn't one of those here.
+
 
 /27
 I can't carry any more things.
 
+
 /28
 I don't have one of those.
 
+
 /29
 I'm already wearing the _.
+
 
 /30     ;One upper case character only
 Y
@@ -343,6 +343,7 @@ More...
 
 >\s
 /34
+
 /35
 
 Time passes...
@@ -350,26 +351,34 @@ Time passes...
 /36
 I now have the _.
 
+
 /37
 I'm now wearing the _.
+
 
 /38
 I've removed the _.
 
+
 /39
 I've dropped the _.
+
 
 /40
 I can't wear the _.
 
+
 /41
 I can't remove the _.
+
 
 /42
 I can't remove the _.  My hands are full.
 
+
 /43
 The _ weighs too much for me.
+
 
 /44
 The _ is in the 
@@ -382,14 +391,18 @@ The _ isn't in the
 /48
 . 
 
+
 /49
 I don't have the _.
+
 
 /50
 I'm not wearing the _.
 
+
 /51
 .
+
 
 /52
 There isn't one of those in the 
@@ -429,24 +442,33 @@ closed.
 open. 
 /3
 The door swings open... 
+
 /4
 You close the door which shuts with a bang... 
+
 /5
 You can't. 
 /6
 You can't leave the castle on foot.
+
 /7
 The sentries bar your progress. "Common soldiers are not allowed in the throne room" one of them barks at you. 
+
 /8
 What's this you've found under the bench? It's your helmet, which you pick up.
+
 /9
 You search the straw revealing an object...
+
 /10
 You poke the end of the torch into the fire and it bursts into flame.
+
 /11
 You find nothing of any use.
+
 /12
 You see nothing special.
+
 /13
 The torch is 
 /14
@@ -455,6 +477,45 @@ unlit.
 lit.
 /16
 The notice on the wall reads: NO SPITTING IN THE FIRE!
+
+/17
+The horse has no 
+/18
+saddle.
+
+/19
+bridle.
+
+/20
+You don't have a sword.
+
+/21
+You are not wearing the _.
+
+/22
+
+
+You mount the horse and ride out of the castle to join your comrades on the dawn patrol ...
+
+
+WELL DONE, you have finished the adventure!
+
+
+/23
+
+You hear a loud voice yell out nearby, "Private Smith! where are you hiding you 'orrible little man?"
+
+/24
+
+You hear footsteps behind you and a gruff voice shouts out, "Here he is! Throw him in the dungeon for failing to report for duty!" Two burly soldiers frogmarch you away and throw you in the castle dungeon! You took too many moves and have failed!
+
+/25
+
+"Dawn Patrol" was published in Larry Horsfield's five-part series "PLAYING AND WRITING ADVENTURE GAMES" (Sinclair User, issues 128-132)
+
+
+DAAD Copyright (c) 1988, 1989, 1990, 1991 Infinite Imaginations & Aventuras AD.
+
 ;------------------------------------------------------------------------------
 /OTX    ;Object Texts
 /0
@@ -476,20 +537,15 @@ a horse
 ;------------------------------------------------------------------------------
 /LTX    ;Location Texts
 /0
+Dawn Patrol
 
-
-              Dawn Patrol
+Release 1 / Serial number 121018 / DAAD v2
 
 
 You are a soldier in the army of King Zog and are due out on mounted patrol in
 a few minutes. Some pranksters have hidden your helmet and chainmail, so you
 must find these before you ride out to join your comrades - before your
 commander notices your absence!
-
-
-Release 01 Serial number 090918
-Interpreter DAAD v2 
-Copyright (c) 1988, 1989, 1990, 1991 Infinite Imaginations & Aventuras AD.
 
 
 /1
@@ -584,6 +640,8 @@ _       _       PROCESS 4               ; Do process 2 stuff here
 ;                ABSENT  0
 ;                MINUS   10      1
 
+_	_	MINUS	5	1	; Used in Process 10
+
 _       _       PARSE   0               ; Get next LS from current buffer
                 PROCESS 2               ; Failed cos of invalid or timeout
                 REDO
@@ -605,9 +663,11 @@ _       _       MOVE    Player          ; No so try to move player
 _       _       NEWTEXT
                 LT      Verb    14
                 SYSMESS 7
+		NEWLINE
                 REDO
 
 _       _       SYSMESS 8
+		NEWLINE
                 REDO
 
 
@@ -618,6 +678,7 @@ _       _       HASAT TIMEOUT
                 DONE
 
 _       _       SYSMESS 6               ; I didn't understand
+		NEWLINE
 
 ;------------------------------------------------------------------------------
 /PRO 3 ; Old process 1. Note that both the response table and the old PAW 
@@ -651,14 +712,15 @@ _	_	AT	2
 		NOTZERO	11
 		MES	2
 
-;This is better carried out thus
+; This is better carried out thus ...
 
 _       _       NEWLINE
                 ZERO    DarkF            ; Isn't dark
 		NEWLINE
                 LISTOBJ
 
-;than the old system needed in Version 1, without accesss to DarkF
+; ... than the old system needed in Version 1, without accesss to DarkF
+
 ;_       _       NEWLINE
 ;                ZERO    0               ;If it is light...
 ;                ABSENT  0               ;and the light source is absent...
@@ -669,6 +731,9 @@ _       _       NEWLINE
 
 ;------------------------------------------------------------------------------
 /PRO 4 ; Old process 2
+
+_	_	PROCESS	10		; commander looking for you
+
 ;------------------------------------------------------------------------------
 /PRO 5 ; Old response table - Command decoder
 
@@ -677,6 +742,7 @@ S       _       AT      1
                 MES     5
                 MES     0
                 MESSAGE 1
+		NEWLINE
                 DONE
 
 S       _       AT      1
@@ -696,15 +762,14 @@ N	_	AT	2
 		MES	5
 		MES	0
 		MESSAGE	1
+		NEWLINE
 		DONE
 
 W	_	AT	6
-                NEWLINE
 		MESSAGE	6
 		DONE
 
 N	_	AT	5
-                NEWLINE
 		MESSAGE	7
 		DONE
 
@@ -736,7 +801,7 @@ SEARCH	STRAW	AT	3
 		MESSAGE	9
 		CREATE	3
 		SET	13
-		RESTART
+		DONE
 
 SEARCH	_	MESSAGE	11
 		DONE
@@ -763,9 +828,35 @@ READ	NOTICE	AT	7
 		MESSAGE	16
 		DONE
 
+PUT	SADDLE	PREP	ON
+		NOUN2	HORSE
+		CARRIED	5		; a saddle
+		PRESENT	7		; is the horse there?
+		DESTROY 5
+		SET	14
+		OK 
+
+_	SADDLE	NOUN2	HORSE		; so that "saddle horse" works
+		CARRIED	5
+		PRESENT	7
+		DESTROY	5
+		SET	14
+		OK
+
+PUT	BRIDL	PREP	ON
+		NOUN2	HORSE
+		CARRIED	6		; a bridle
+		PRESENT	7		; is the horse there?
+		DESTROY	6
+		SET	15
+		OK
+
+RIDE	HORSE	AT	3
+		PROCESS	9
+		DONE
+
 I       _       SYSMESS 9
                 LISTAT  CARRIED         ; 254
-                NEWLINE
                 SYSMESS 10
                 LISTAT  WORN            ; 253
                 NEWLINE
@@ -806,7 +897,12 @@ RAMLO   _       RAMLOAD 255             ;Reload all flags
                 RESTART
 
 LOOK    _       RESTART
+
+ABOUT	_	MESSAGE	25
+		DONE
+
 ;------------------------------------------------------------------------------
+
 /PRO 6 ; Initialise the DAAD system
 
 _       _       WINDOW  1               ; Windows are random
@@ -816,7 +912,23 @@ _       _       WINAT   0       0       ; set 14 0 for split screen with GFX
                 DESC    0               ; Introduction
                 ANYKEY
                 CLS
+		CLEAR	5
+		CLEAR	11
+		CLEAR	12
+		CLEAR	13
+		CLEAR	14
+		CLEAR	15
+		CLEAR	16
                 CLEAR   255             ; Clear all flags
+
+; turns
+; door
+; look under bench
+; search straw
+; put saddle
+; put bridle
+; game finished
+
 
 _       _       NOTEQ   255     GFlags
                 CLEAR   [255]
@@ -845,6 +957,7 @@ _	_	CARRIED	1
 		DONE
 
 _	_	SYSMESS	8		; "I can't do that."
+		NEWLINE
 		DONE
 
 /PRO 8 ; Extinguish torch
@@ -868,4 +981,54 @@ _	_	CARRIED	0		; does this entry ever run?
 		RESTART
 
 _	_	SYSMESS	8		; "I can't do that."
+		NEWLINE
 		DONE
+
+/PRO 9 ; (RIDE HORSE at 3)
+
+_	_	NOTWORN	2		; helmet
+;		WHATO			; this would put "horse" in 51, what for?
+		LET	51	2
+		MESSAGE	21		; "You are not wearing the _."
+		DONE
+
+_	_	NOTWORN	3		; coat
+;		WHATO			; this would put "horse" in 51, what for?
+		LET	51	3
+		MESSAGE	21		; "You are not wearing the _."
+		DONE
+
+_	_	NOTCARR	4		; sword
+		MESSAGE	20		; "You don't have a sword."
+		DONE
+
+_	_	ZERO	14
+		MES	17		; "The horse has no"
+		MESSAGE	18		; saddle
+		DONE
+
+_	_	ZERO	15
+		MES	17		; "The horse has no"
+		MESSAGE	19		; bridle
+		DONE
+
+_	_	MESSAGE	22		; "You mount the horse and..."
+		SET	16
+;		TURNS
+		END
+
+/PRO 10 ; (<- /PRO 2 commander looking for you)
+
+_	_	ZERO	16
+		ZERO	5
+		LET	5	31	; Complete the adventure within 30 moves
+
+_	_	ZERO	16
+		EQ	5	11	; First (and last) warning
+		MESSAGE	23		; "You hear a loud voice..."
+
+_	_	ZERO	16
+		EQ	5	1
+		MESSAGE	24
+;		TURNS
+		END
