@@ -219,6 +219,7 @@ HOLD	39	verb
 READ	40	verb
 RIDE	41	verb
 MOUNT	41	verb
+ABOUT	42	verb
 ;                               Adjectives
 SMALL   2       adjective
 BIG     3       adjective
@@ -261,6 +262,7 @@ THEN    2       conjugation
 /STX    ;System Message Texts
 /0
 It's too dark to see anything.
+
 /1
 I can also see 
 /2
@@ -272,7 +274,7 @@ What should I do now?
 /5
 What should I do next?
 /6
-I was not able to understand any of that.  Please try again.
+I was not able to understand any of that.
 
 /7
 I can't go in that direction.
@@ -446,7 +448,6 @@ You close the door which shuts with a bang...
 
 /5
 You can't. 
-
 /6
 You can't leave the castle on foot.
 
@@ -497,7 +498,7 @@ You are not wearing the _.
 You mount the horse and ride out of the castle to join your comrades on the dawn patrol ...
 
 
-WELL DONE! You have finished the adventure!
+WELL DONE, you have finished the adventure!
 
 
 /23
@@ -507,6 +508,13 @@ You hear a loud voice yell out nearby, "Private Smith! where are you hiding you 
 /24
 
 You hear footsteps behind you and a gruff voice shouts out, "Here he is! Throw him in the dungeon for failing to report for duty!" Two burly soldiers frogmarch you away and throw you in the castle dungeon! You took too many moves and have failed!
+
+/25
+
+"Dawn Patrol" was published in Larry Horsfield's five-part series "PLAYING AND WRITING ADVENTURE GAMES" (Sinclair User, issues 128-132)
+
+
+DAAD Copyright (c) 1988, 1989, 1990, 1991 Infinite Imaginations & Aventuras AD.
 
 ;------------------------------------------------------------------------------
 /OTX    ;Object Texts
@@ -529,24 +537,15 @@ a horse
 ;------------------------------------------------------------------------------
 /LTX    ;Location Texts
 /0
-              Dawn Patrol
+Dawn Patrol
+
+Release 1 / Serial number 121018 / DAAD v2
 
 
 You are a soldier in the army of King Zog and are due out on mounted patrol in
 a few minutes. Some pranksters have hidden your helmet and chainmail, so you
 must find these before you ride out to join your comrades - before your
 commander notices your absence!
-
-
-Ported to DAAD by Peter Villar from Larry Horsfield's five-part series "PLAYING AND WRITING ADVENTURE GAMES" (www.sinclairuser.com/128/pawtut.htm)
-
-
-Release 01 Serial number 20181007 / DAAD v2
-
-Copyright (c) 1988, 1989, 1990, 1991
-
-Infinite Imaginations & Aventuras AD.
-
 
 
 /1
@@ -664,9 +663,11 @@ _       _       MOVE    Player          ; No so try to move player
 _       _       NEWTEXT
                 LT      Verb    14
                 SYSMESS 7
+		NEWLINE
                 REDO
 
 _       _       SYSMESS 8
+		NEWLINE
                 REDO
 
 
@@ -677,6 +678,7 @@ _       _       HASAT TIMEOUT
                 DONE
 
 _       _       SYSMESS 6               ; I didn't understand
+		NEWLINE
 
 ;------------------------------------------------------------------------------
 /PRO 3 ; Old process 1. Note that both the response table and the old PAW 
@@ -740,6 +742,7 @@ S       _       AT      1
                 MES     5
                 MES     0
                 MESSAGE 1
+		NEWLINE
                 DONE
 
 S       _       AT      1
@@ -759,6 +762,7 @@ N	_	AT	2
 		MES	5
 		MES	0
 		MESSAGE	1
+		NEWLINE
 		DONE
 
 W	_	AT	6
@@ -894,6 +898,9 @@ RAMLO   _       RAMLOAD 255             ;Reload all flags
 
 LOOK    _       RESTART
 
+ABOUT	_	MESSAGE	25
+		DONE
+
 ;------------------------------------------------------------------------------
 
 /PRO 6 ; Initialise the DAAD system
@@ -914,13 +921,14 @@ _       _       WINAT   0       0       ; set 14 0 for split screen with GFX
 		CLEAR	16
                 CLEAR   255             ; Clear all flags
 
-;		CLEAR	5		; DAWN patrol - turns
-;		CLEAR	11		; DAWN patrol - door
-;		CLEAR	12		; DAWN patrol - look under bench
-;		CLEAR	13		; DAWN patrol - search straw
-;		CLEAR	14		; DAWN patrol - put saddle
-;		CLEAR	15		; DAWN patrol - put bridle
-;		CLEAR	16		; DAWN patrol - game finished
+; turns
+; door
+; look under bench
+; search straw
+; put saddle
+; put bridle
+; game finished
+
 
 _       _       NOTEQ   255     GFlags
                 CLEAR   [255]
@@ -949,6 +957,7 @@ _	_	CARRIED	1
 		DONE
 
 _	_	SYSMESS	8		; "I can't do that."
+		NEWLINE
 		DONE
 
 /PRO 8 ; Extinguish torch
@@ -972,6 +981,7 @@ _	_	CARRIED	0		; does this entry ever run?
 		RESTART
 
 _	_	SYSMESS	8		; "I can't do that."
+		NEWLINE
 		DONE
 
 /PRO 9 ; (RIDE HORSE at 3)
@@ -1011,10 +1021,10 @@ _	_	MESSAGE	22		; "You mount the horse and..."
 
 _	_	ZERO	16
 		ZERO	5
-		LET	5	51	; Complete the adventure within 50 moves
+		LET	5	31	; Complete the adventure within 30 moves
 
 _	_	ZERO	16
-		EQ	5	21	; First (and last) warning
+		EQ	5	11	; First (and last) warning
 		MESSAGE	23		; "You hear a loud voice..."
 
 _	_	ZERO	16
